@@ -6,7 +6,8 @@ set (kitsune_VERSION_MINOR 1)
 
 include_directories(
     "${PROJECT_SOURCE_DIR}/src/"
-    "${PROJECT_SOURCE_DIR}/src/painter")
+    "${PROJECT_SOURCE_DIR}/src/painter"
+    "${PROJECT_SOURCE_DIR}/external/SDL2-2.0.4/include/")
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/painter)
 
