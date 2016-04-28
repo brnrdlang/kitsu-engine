@@ -4,7 +4,7 @@
 
 Painter::Painter(int width, int height, bool fs, std::string title) {
 	if(SDL_Init(SDL_INIT_VIDEO) != 0)
-		throw PainterError("Initialization of SDL failed\n");
+		throw PainterError("Initialization of SDL Video failed\n");
 
 	Uint32 flags = 0;
 	
