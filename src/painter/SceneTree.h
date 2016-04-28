@@ -2,9 +2,10 @@
 #define KITSUNE_PAINTER_SCENETREE_H
 
 #include <list>
-#include <priority_queue>
+#include <queue>
 #include <functional>
 #include "SDL_timer.h"
+#include "GraphicsObject.h"
 
 class SceneNode {
 public:
@@ -45,7 +46,7 @@ public:
 
 class SceneTree {
 public:
-    SceneTree() {};
+	SceneTree(SDL_Rect screen_size) : queue_(), root_(nullptr, screen_size) {};
     virtual ~SceneTree() {};
 
     void draw_all(unsigned int time);

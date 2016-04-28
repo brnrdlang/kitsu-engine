@@ -4,6 +4,7 @@
 #include <string>
 #include <exception>
 #include "SDL.h"
+#include "SceneTree.h"
 
 class PainterError : public std::exception {
 public:
