@@ -18,10 +18,12 @@ private:
 class Painter {
 public:
 	Painter(int width, int height, bool fs, std::string title);
-	~Painter();
+	virtual ~Painter();
 
 	void draw();
 private:
 	SDL_Window *window_;
+    AnimationQueue queue_;
+    SceneTree scene_;
 };
 #endif

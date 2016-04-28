@@ -18,7 +18,7 @@ Painter::Painter(int width, int height, bool fs, std::string title) {
 	}
 }
 
-Painter::~Painter() {
+virtual Painter::~Painter() {
 	SDL_DestroyWindow(this->window_);
 	SDL_Quit();
 }
