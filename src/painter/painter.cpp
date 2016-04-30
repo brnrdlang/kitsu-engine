@@ -58,7 +58,7 @@ void Painter::draw() {
 
     unsigned int time = SDL_GetTicks();
 
-	while (next_event_time() <= time) {
+	while (not queue_.empty() and next_event_time() <= time) {
         queue_.top().sprite_->draw(screen);
         queue_.pop();
     }

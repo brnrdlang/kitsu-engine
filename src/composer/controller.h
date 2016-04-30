@@ -5,58 +5,113 @@
 #include "SDL_events.h"
 
 struct Controller {
-    std::function<void(SDL_CommonEvent)> on_common_event;
+    std::function<void(SDL_Event)> on_common_event;
 
-    std::function<void(SDL_WindowEvent)> on_window_event;
+    std::function<void(SDL_Event)> on_window_event;
 
-    std::function<void(SDL_KeyboardEvent)> on_key_up;
-    std::function<void(SDL_KeyboardEvent)> on_key_down;
+    std::function<void(SDL_Event)> on_key_up;
+    std::function<void(SDL_Event)> on_key_down;
 
-    std::function<void(SDL_TextEditingEvent)> on_text_editing_event;
+    std::function<void(SDL_Event)> on_text_editing_event;
 
-    std::function<void(SDL_TextInputEvent)> on_text_input_event;
+    std::function<void(SDL_Event)> on_text_input_event;
 
-    std::function<void(SDL_MouseMotionEvent)> on_mouse_motion;
+    std::function<void(SDL_Event)> on_mouse_motion;
 
-    std::function<void(SDL_MouseButtonEvent)> on_mouse_button_down;
-    std::function<void(SDL_MouseButtonEvent)> on_mouse_button_up;
+    std::function<void(SDL_Event)> on_mouse_button_down;
+    std::function<void(SDL_Event)> on_mouse_button_up;
 
-    std::function<void(SDL_MouseWheelEvent)> on_mouse_wheel;
+    std::function<void(SDL_Event)> on_mouse_wheel;
 
-    std::function<void(SDL_JoyAxisEvent)> on_joystick_axis;
-    std::function<void(SDL_JoyHatEvent)> on_joystick_head;
-    std::function<void(SDL_JoyBallEvent)> on_joystick_ball;
-    std::function<void(SDL_JoyButtonEvent)> on_joystick_button_up;
-    std::function<void(SDL_JoyButtonEvent)> on_joystick_button_down;    
-    std::function<void(SDL_JoyDeviceEvent)> on_joystick_device_added;
-    std::function<void(SDL_JoyDeviceEvent)> on_joystick_device_removed;
+    std::function<void(SDL_Event)> on_joystick_axis;
+    std::function<void(SDL_Event)> on_joystick_hat;
+    std::function<void(SDL_Event)> on_joystick_ball;
+    std::function<void(SDL_Event)> on_joystick_button_up;
+    std::function<void(SDL_Event)> on_joystick_button_down;    
+    std::function<void(SDL_Event)> on_joystick_device_added;
+    std::function<void(SDL_Event)> on_joystick_device_removed;
 
-    std::function<void(SDL_QuitEvent)> on_quit;
+    std::function<void(SDL_Event)> on_quit;
 
-    std::function<void(SDL_UserEvent)> on_user_event;
+    std::function<void(SDL_Event)> on_user_event;
 
-    std::function<void(SDL_SysWMEvent)> on_sys_wm_event;
+    std::function<void(SDL_Event)> on_sys_wm_event;
 
-    std::function<void(SDL_TouchFingerEvent)> on_touch_motion;
-    std::function<void(SDL_TouchFingerEvent)> on_touch_down;
-    std::function<void(SDL_TouchFingerEvent)> on_touch_up;
+    std::function<void(SDL_Event)> on_touch_motion;
+    std::function<void(SDL_Event)> on_touch_down;
+    std::function<void(SDL_Event)> on_touch_up;
 
-    std::function<void(SDL_MultiGestureEvent)> on_multi_gesture;
+    std::function<void(SDL_Event)> on_multi_gesture;
 
-    std::function<void(SDL_DropEvent)> on_drop;
+    std::function<void(SDL_Event)> on_drop;
 
-    std::function<void(SDL_AudioDeviceEvent)> on_audio_device_added;
-    std::function<void(SDL_AudioDeviceEvent)> on_audio_device_removed;
+    std::function<void(SDL_Event)> on_audio_device_added;
+    std::function<void(SDL_Event)> on_audio_device_removed;
 
-    std::function<void(SDL_ControllerAxisEvent)> on_controller_axis_motion;
-    std::function<void(SDL_ControllerButtonEvent)> on_controller_button_down;
-    std::function<void(SDL_ControllerButtonEvent)> on_controller_button_up;
-    std::function<void(SDL_ControllerDeviceEvent)> on_controller_device_added;
-    std::function<void(SDL_ControllerDeviceEvent)> on_controller_device_removed;
-    std::function<void(SDL_ControllerDeviceEvent)> on_controller_device_remapped;
+    std::function<void(SDL_Event)> on_controller_axis_motion;
+    std::function<void(SDL_Event)> on_controller_button_down;
+    std::function<void(SDL_Event)> on_controller_button_up;
+    std::function<void(SDL_Event)> on_controller_device_added;
+    std::function<void(SDL_Event)> on_controller_device_removed;
+    std::function<void(SDL_Event)> on_controller_device_remapped;
 
-    std::function<void(SDL_DollarGestureEvent)> on_dollar_gesture;
-    std::function<void(SDL_DollarGestureEvent)> on_dollar_record;
+    std::function<void(SDL_Event)> on_dollar_gesture;
+    std::function<void(SDL_Event)> on_dollar_record;
+
+Controller() {
+    on_common_event = [](SDL_Event ev) {return;};
+
+    on_window_event = [](SDL_Event ev) {return;};
+
+    on_key_up = [](SDL_Event ev) {return;};
+    on_key_down = [](SDL_Event ev) {return;};
+
+    on_text_editing_event = [](SDL_Event ev) {return;};
+
+    on_text_input_event = [](SDL_Event ev) {return;};
+
+    on_mouse_motion = [](SDL_Event ev) {return;};
+
+    on_mouse_button_down = [](SDL_Event ev) {return;};
+    on_mouse_button_up = [](SDL_Event ev) {return;};
+
+    on_mouse_wheel = [](SDL_Event ev) {return;};
+
+    on_joystick_axis = [](SDL_Event ev) {return;};
+    on_joystick_hat = [](SDL_Event ev) {return;};
+    on_joystick_ball = [](SDL_Event ev) {return;};
+    on_joystick_button_up = [](SDL_Event ev) {return;};
+    on_joystick_button_down = [](SDL_Event ev) {return;};    
+    on_joystick_device_added = [](SDL_Event ev) {return;};
+    on_joystick_device_removed = [](SDL_Event ev) {return;};
+
+    on_quit = [](SDL_Event ev) {return;};
+
+    on_user_event = [](SDL_Event ev) {return;};
+
+    on_sys_wm_event = [](SDL_Event ev) {return;};
+
+    on_touch_motion = [](SDL_Event ev) {return;};
+    on_touch_down = [](SDL_Event ev) {return;};
+    on_touch_up = [](SDL_Event ev) {return;};
+
+    on_multi_gesture = [](SDL_Event ev) {return;};
+
+    on_drop = [](SDL_Event ev) {return;};
+
+    on_audio_device_added = [](SDL_Event ev) {return;};
+    on_audio_device_removed = [](SDL_Event ev) {return;};
+
+    on_controller_axis_motion = [](SDL_Event ev) {return;};
+    on_controller_button_down = [](SDL_Event ev) {return;};
+    on_controller_button_up = [](SDL_Event ev) {return;};
+    on_controller_device_added = [](SDL_Event ev) {return;};
+    on_controller_device_removed = [](SDL_Event ev) {return;};
+    on_controller_device_remapped = [](SDL_Event ev) {return;};
+
+    on_dollar_gesture = [](SDL_Event ev) {return;};
+    on_dollar_record = [](SDL_Event ev) {return;};
+};
 
     void poll_events() {
         SDL_Event ev;
@@ -69,9 +124,9 @@ struct Controller {
     void eval_event(SDL_Event ev) {
         switch(ev.type) {
         case SDL_MOUSEMOTION:
-            on_mouse_motion(reinterpret_cast<SDL_MouseMotionEvent>(ev));
+            on_mouse_motion(ev);
             break;
-/**        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONDOWN:
             on_mouse_button_down(ev);
             break;
         case SDL_MOUSEBUTTONUP:
@@ -152,8 +207,8 @@ struct Controller {
         case SDL_JOYBUTTONDOWN:
             on_joystick_button_down(ev);
             break;
-        case SDL_JOYBUTTONDOWN:
-            on_joystick_button_down(ev);
+        case SDL_JOYBUTTONUP:
+            on_joystick_button_up(ev);
             break;
         case SDL_JOYDEVICEADDED:
             on_joystick_device_added(ev);
@@ -171,7 +226,7 @@ struct Controller {
             on_user_event(ev);
             break;
         default:
-            on_common_event(ev);*/
+            on_common_event(ev);
         }
     };
 };
