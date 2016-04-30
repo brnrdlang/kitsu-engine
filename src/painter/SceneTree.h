@@ -2,8 +2,6 @@
 #define KITSUNE_PAINTER_SCENETREE_H
 
 #include <list>
-#include <queue>
-#include <functional>
 #include "SDL_timer.h"
 #include "GraphicsObject.h"
 
@@ -12,19 +10,14 @@ public:
     SceneNode(SceneNode* parent, SDL_Rect rect);
     virtual ~SceneNode();
 
-    void draw();
+    SceneNode* insert(GraphicsObject* obj);
+    void remove(GraphicsObject* obj);
+    void draw(SDL_Surface* surf);
 
-    std::list<GraphicsObject> sprites;
 private:
+    std::list<GraphicsObject*> sprites_;
     SceneNode* parent_;
-    SceneNode* nw_;
-    SceneNode* ne_;
-    SceneNode* se_;
-    SceneNode* sw_;
-
-    SceneNode* front_;
-    SceneNode* back_;
-
+    SceneNode* children_[4];
     SDL_Rect hitbox_;
 };
 
@@ -33,27 +26,33 @@ public:
     AnimationEvent(unsigned int time, SceneNode* sprite) : time_(time), sprite_(sprite) {};
     virtual ~AnimationEvent() {};
 
-    bool operator<(AnimationEvent& ev) {
-        return this->time_ < ev.time_;
+    AnimationEvent(const AnimationEvent &ev) : time_(ev.time_), sprite_(ev.sprite_) {};
+    AnimationEvent(AnimationEvent &&ev) : time_(ev.time_), sprite_(ev.sprite_) {};
+
+    AnimationEvent& operator=(const AnimationEvent &ev) {
+        this->time_ = ev.time_;
+        this->sprite_ = ev.sprite_;
+
+        return *this;
+    }
+
+    AnimationEvent& operator=(AnimationEvent &&ev) {
+        this->time_ = ev.time_;
+        this->sprite_ = ev.sprite_;
+
+        return *this;
+    }
+
+    friend bool operator<(const AnimationEvent& ev1, const AnimationEvent& ev2) {
+        return ev1.time_ < ev2.time_;
     };
-    bool operator>(AnimationEvent& ev) {
-        return this->time_ > ev.time_;
+    friend bool operator>(const AnimationEvent ev1, const AnimationEvent& ev2) {
+        return ev1.time_ > ev2.time_;
     };
 
-    const unsigned int time_;
-    const SceneNode* sprite_;
+    unsigned int time_;
+    SceneNode* sprite_;
 };
 
-class SceneTree {
-public:
-	SceneTree(SDL_Rect screen_size) : queue_(), root_(nullptr, screen_size) {};
-    virtual ~SceneTree() {};
-
-    void draw_all(unsigned int time);
-    unsigned int next_event_time();
-private:
-    SceneNode root_;
-    std::priority_queue<AnimationEvent, std::vector<AnimationEvent>, std::greater<AnimationEvent>> queue_;
-};
-
+int quadrant(SDL_Rect& A, SDL_Rect& B);
 #endif

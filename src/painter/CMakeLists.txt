@@ -1,4 +1,6 @@
-add_library(painter painter.cpp)
+add_library(painter
+    painter.cpp
+    SceneTree.cpp)
 
 if(WIN32)
     include_directories("${PROJECT_SOURCE_DIR}/external/SDL2-2.0.4/include/")

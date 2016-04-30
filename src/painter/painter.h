@@ -3,7 +3,11 @@
 
 #include <string>
 #include <exception>
+#include <queue>
+#include <functional>
+
 #include "SDL.h"
+#include "GraphicsObject.h"
 #include "SceneTree.h"
 
 class PainterError : public std::exception {
@@ -21,10 +25,16 @@ public:
 	Painter(int width, int height, bool fs, std::string title);
 	virtual ~Painter();
 
+    SceneNode* add_object_to_scene(GraphicsObject* go);
+    void remove_object_from_scene(GraphicsObject* obj);
+
 	void draw();
 private:
+    unsigned int next_event_time();
+
 	SDL_Window *window_;
-    AnimationQueue queue_;
-    SceneTree scene_;
+    SceneNode *scene_;
+    std::priority_queue<AnimationEvent, std::vector<AnimationEvent>, std::greater<AnimationEvent>> queue_;
 };
+
 #endif
