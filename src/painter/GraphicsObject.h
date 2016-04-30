@@ -13,6 +13,20 @@ struct Position {
     Position(double x, double y, int z) : x(x), y(y), z(z) {};
 };
 
+struct Color {
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+    Uint8 a;
+
+    Color(Uint8 r, Uint8 g, Uint8 b) : r(r), g(g), b(b), a(255) {};
+    Color(Uint8 r, Uint8 g, Uint8 b, Uint8 a) : r(r) g(g), b(b), a(a) {};
+
+    Uint32 to_SDL(SDL_Surface* s) {
+        return SDL_MapRGBA(s->format, r, g, b, a);
+    }
+};
+
 class GraphicsObject {
 public:
     GraphicsObject();
