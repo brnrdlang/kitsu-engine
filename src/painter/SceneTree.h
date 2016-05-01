@@ -1,29 +1,35 @@
 #ifndef KITSUNE_PAINTER_SCENETREE_H
 #define KITSUNE_PAINTER_SCENETREE_H
 
-#include <list>
+#include <set>
 #include "SDL_timer.h"
 #include "GraphicsObject.h"
+
+struct compGOP {
+    bool operator()(const GraphicsObject * const & a, const GraphicsObject * const & b) const {
+        return *a < *b;
+    }
+};
 
 class SceneNode {
 public:
     SceneNode(SceneNode* parent, SDL_Rect rect);
     virtual ~SceneNode();
 
-    SceneNode* insert(GraphicsObject* obj);
+    void insert(GraphicsObject* obj);
     void remove(GraphicsObject* obj);
-    void draw(SDL_Surface* surf);
+    void draw(SDL_Renderer* rndr, std::set<GraphicsObject*, compGOP>* draw_set);
 
+    SDL_Rect hitbox_;
 private:
-    std::list<GraphicsObject*> sprites_;
+    std::set<GraphicsObject*, compGOP> sprites_;
     SceneNode* parent_;
     SceneNode* children_[4];
-    SDL_Rect hitbox_;
 };
 
 class AnimationEvent {
 public:
-    AnimationEvent(unsigned int time, SceneNode* sprite) : time_(time), sprite_(sprite) {};
+    AnimationEvent(unsigned int time, GraphicsObject* sprite) : time_(time), sprite_(sprite) {};
     virtual ~AnimationEvent() {};
 
     AnimationEvent(const AnimationEvent &ev) : time_(ev.time_), sprite_(ev.sprite_) {};
@@ -51,7 +57,7 @@ public:
     };
 
     unsigned int time_;
-    SceneNode* sprite_;
+    GraphicsObject* sprite_;
 };
 
 int quadrant(SDL_Rect& A, SDL_Rect& B);

@@ -1,3 +1,6 @@
+#include <iostream>
+
+#include "painter.h"
 #include "SceneTree.h"
 
 SceneNode::SceneNode(SceneNode* parent, SDL_Rect rect) : parent_(parent), hitbox_(rect) {
@@ -8,47 +11,83 @@ SceneNode::SceneNode(SceneNode* parent, SDL_Rect rect) : parent_(parent), hitbox
 }
 
 SceneNode::~SceneNode() {
-    delete[] children_;
+    delete children_[0];
+    delete children_[1];
+    delete children_[2];
+    delete children_[3];
 }
 
-template <typename T>
-bool PComp(const T * const & a, const T * const & b)
-{
-   return *a < *b;
-}
-
-SceneNode* SceneNode::insert(GraphicsObject* obj) {
+void SceneNode::insert(GraphicsObject* obj) {
     int q = quadrant(obj->hitbox_, this->hitbox_);
 
-    if (q == 4) {
-        this->sprites_.push_front(obj);
-        this->sprites_.sort(PComp<GraphicsObject>);
+    if (q == 4 or q == -1) {
+        this->sprites_.insert(obj);
+        obj->node_ = this;
 
-        return this;
+        return;
     } else {
-        return this->children_[q]->insert(obj);
+        if (this->children_[q] == nullptr) {
+            SDL_Rect rct;
+            switch(q) {
+            case 0:
+                rct.x = hitbox_.x;
+                rct.y = hitbox_.y;
+                rct.w = hitbox_.w/2 + hitbox_.w % 2;
+                rct.h = hitbox_.h/2 + hitbox_.h % 2;
+                break;
+            case 1:
+                rct.x = hitbox_.x + hitbox_.w/2 + hitbox_.w % 2;
+                rct.y = hitbox_.y;
+                rct.w = hitbox_.w/2;
+                rct.h = hitbox_.h/2 + hitbox_.h % 2;
+                break;
+            case 2:
+                rct.x = hitbox_.x;
+                rct.y = hitbox_.y + hitbox_.h/2 + hitbox_.h % 2;
+                rct.w = hitbox_.w/2 + hitbox_.w % 2;
+                rct.h = hitbox_.h/2;
+                break;
+            case 3:
+                rct.x = hitbox_.x + hitbox_.w/2 + hitbox_.w % 2;
+                rct.y = hitbox_.y + hitbox_.h/2 + hitbox_.h % 2;
+                rct.w = hitbox_.w/2;
+                rct.h = hitbox_.h/2;
+                break;
+            default:
+                std::cerr << "assigned quadrant" << q << "\n";
+                throw PainterError("Error inserting graphics object");
+            }
+
+            this->children_[q] = new SceneNode(this, rct);
+        }
+
+        this->children_[q]->insert(obj);
     }
 }
 
 void SceneNode::remove(GraphicsObject* obj) {
-    this->sprites_.remove(obj);
+    this->sprites_.erase(obj);
 }
 
-void SceneNode::draw(SDL_Surface* surf) {
+void SceneNode::draw(SDL_Renderer* rndr, std::set<GraphicsObject*, compGOP>* draw_set) {
     if (this->children_[0] != nullptr) {
-        this->children_[0]->draw(surf);
+        this->children_[0]->draw(rndr, draw_set);
     }
     if (this->children_[1] != nullptr) {
-        this->children_[1]->draw(surf);
+        this->children_[1]->draw(rndr, draw_set);
     }
     if (this->children_[2] != nullptr) {
-        this->children_[2]->draw(surf);
+        this->children_[2]->draw(rndr, draw_set);
     }
     if (this->children_[3] != nullptr) {
-        this->children_[3]->draw(surf);
+        this->children_[3]->draw(rndr, draw_set);
     }
-    for(auto obj : this->sprites_) {
-        obj->draw(surf);
+
+    if (not this->sprites_.empty()) {
+        SDL_SetRenderDrawColor(rndr, 0, 0, 0, 255);
+        SDL_RenderDrawRect(rndr, &this->hitbox_);
+
+        draw_set->insert(this->sprites_.begin(), this->sprites_.end());
     }
 }
 
@@ -59,29 +98,20 @@ void SceneNode::draw(SDL_Surface* surf) {
  * but not in one of its quadrants.
  */
 int quadrant(SDL_Rect& A, SDL_Rect& B) {
-    int xA = A.x - B.x;
-    int yA = A.y - B.y;
-    int wA = A.w - xA;
-    int hA = A.h - yA;
-    int res = 0;
-
-    if (xA < 0 or yA < 0 or wA > B.w or hA > B.h) {
+    if (A.x < B.x or A.y < B.x or A.x + A.w > B.x + B.w or A.y + A.h > B.y + B.h) {
         return -1;
-    } else {
-        if (xA + wA <= B.w) {
-            res += 0;
-        } else if (xA > B.w/2) {
-            res += 1;
-        } else {
-            return 4;
-        }
-        if (yA + hA <= B.h) {
-            res += 0;
-        } else if (yA > B.h/2) {
-            res += 2;
-        } else {
-            return 4;
-        }
-        return res;
     }
+    if (A.x + A.w < B.x + B.w / 2 and A.y + A.h < B.y + B.h / 2) {
+        return 0;
+    }
+    if (A.x + A.w >= B.x + B.w / 2 and A.y + A.h < B.y + B.h / 2) {
+        return 1;
+    }
+    if (A.x + A.w < B.x + B.w / 2 and A.y + A.h >= B.y + B.h / 2) {
+        return 2;
+    }
+    if (A.x + A.w >= B.x + B.w / 2 and A.y + A.h >= B.y + B.h / 2) {
+        return 3;
+    }
+    return 4;
 }
