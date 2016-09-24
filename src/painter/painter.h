@@ -4,13 +4,12 @@
 #include <string>
 #include <exception>
 #include <queue>
-#include <set>
+#include <vector>
 #include <functional>
 
 #include "SDL.h"
 #include "GraphicsObject.h"
-#include "SceneTree.h"
-#include "SDL_render.h"
+#include "Scene.h"
 
 class PainterError : public std::exception {
 public:
@@ -22,28 +21,38 @@ private:
 	std::string msg;
 };
 
+class AnimationEvent {
+public:
+    AnimationEvent(unsigned int time, ObjectID objid) : time_(time), id_(objid) {};
+    virtual ~AnimationEvent() {};
+
+    friend bool operator<(const AnimationEvent& ev1, const AnimationEvent& ev2) {
+        return ev1.time_ < ev2.time_;
+    };
+    friend bool operator>(const AnimationEvent ev1, const AnimationEvent& ev2) {
+        return ev1.time_ > ev2.time_;
+    };
+
+    unsigned int time_;
+    ObjectID id_;
+};
+
+typedef std::priority_queue<AnimationEvent, std::vector<AnimationEvent>, std::greater<AnimationEvent>> AnimationQueue;
+
 class Painter {
 public:
 	Painter(int width, int height, bool fs, std::string title);
 	virtual ~Painter();
 
-    void add_object_to_scene(GraphicsObject* go);
-    void remove_object_from_scene(GraphicsObject* obj);
-
-    void queue(unsigned int time, GraphicsObject* sprite);
-
     void update();
-	void draw(std::set<GraphicsObject*, compGOP>& draw_set);
 
-    SDL_Renderer* get_renderer();
-    SceneNode* get_scene();
+    Scene* scene_;
+
+    AnimationQueue queue_;
 private:
     unsigned int next_event_time();
-
+    SDL_GLContext gl_context_;
 	SDL_Window *window_;
-    SDL_Renderer *renderer_;
-    SceneNode *scene_;
-    std::priority_queue<AnimationEvent, std::vector<AnimationEvent>, std::greater<AnimationEvent>> queue_;
 };
 
 #endif

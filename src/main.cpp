@@ -5,12 +5,12 @@
 
 int main(int argc, char* argv[]) {
 
-	Painter painter(1024, 768, false, "kitsu-ENGIne");
+    Painter painter(1024, 768, false, "kitsu-ENGIne");
     Controller ctrl;
 
     bool quit = false;
 
-    SDL_Rect rct;
+/*    SDL_Rect rct;
     rct.x = 100; rct.y = 100;rct.w = 200; rct.h = 200;
     SDL_Color clr_red;
     clr_red.r = 255; clr_red.g = 0; clr_red.b = 0; clr_red.a = 255;
@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 
     painter.queue(0, &robj);
     painter.queue(3000, &gobj);
-
+*/
     ctrl.on_quit = [&](SDL_Event ev){quit = true;};
     ctrl.on_key_down = [&](SDL_Event ev){quit = ev.key.keysym.scancode == SDL_SCANCODE_ESCAPE;};
 
@@ -34,9 +34,6 @@ int main(int argc, char* argv[]) {
 
         ctrl.poll_events();
     }
-
-    painter.remove_object_from_scene(&robj);
-    painter.remove_object_from_scene(&gobj);
 
     return 0;
 }

@@ -1,6 +1,8 @@
 #include "painter.h"
 #include "SDL.h"
 #include "SDL_video.h"
+#include <GL/glew.h>
+#include "SDL_opengl.h"
 
 /**
  * Painter constructor. Initializes SDL2 and creates a window with given coordinates and title.
@@ -9,10 +11,15 @@ Painter::Painter(int width, int height, bool fs, std::string title) {
 	if(SDL_Init(SDL_INIT_VIDEO) != 0)
 		throw PainterError("Initialization of SDL Video failed\n");
 
-	Uint32 flags = 0;
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+	Uint32 flags = SDL_WINDOW_OPENGL;
 	
 	if (fs)
-		 flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+		 flags = flags | SDL_WINDOW_FULLSCREEN_DESKTOP;
 
 	this->window_ = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 
@@ -20,49 +27,26 @@ Painter::Painter(int width, int height, bool fs, std::string title) {
 		throw PainterError("Could not create window: " + std::string(SDL_GetError()) + "\n");
 	}
 
-    this->renderer_ = SDL_CreateRenderer(this->window_, -1, SDL_RENDERER_ACCELERATED);
+    SDL_GLContext gl_context_ = SDL_GL_CreateContext(this->window_);
 
-    if (this->renderer_ == nullptr) {
-        throw PainterError("Could not create renderer: " + std::string(SDL_GetError()) + "\n");
-    }
+    glewExperimental = GL_TRUE;
+    glewInit();
 
     SDL_Rect scrn;
     scrn.x = 0; scrn.y = 0; scrn.w = width; scrn.h = height;
 
-    this->scene_ = new SceneNode(nullptr, scrn);
+    this->scene_ = new StandardScene(&gl_context_);
 }
 
 /**
  *
  */
 Painter::~Painter() {
+    delete scene_;
+
 	SDL_DestroyWindow(this->window_);
-    SDL_DestroyRenderer(this->renderer_);
+    SDL_GL_DeleteContext(this->gl_context_);
 	SDL_Quit();
-}
-
-void Painter::add_object_to_scene(GraphicsObject* obj) {
-    this->scene_->insert(obj);
-}
-
-void Painter::remove_object_from_scene(GraphicsObject* obj) {
-    obj->node_->remove(obj);
-}
-
-unsigned int Painter::next_event_time() {
-    return queue_.top().time_;
-}
-
-SDL_Renderer* Painter::get_renderer() {
-    return renderer_;
-}
-
-SceneNode* Painter::get_scene() {
-    return scene_;
-}
-
-void Painter::queue(unsigned int time, GraphicsObject* sprite) {
-    queue_.push(AnimationEvent(time, sprite));
 }
 
 /**
@@ -83,20 +67,6 @@ void Painter::update() {
         return;
     }
 
-    std::set<GraphicsObject*, compGOP> to_draw;
-
-    while (not queue_.empty() and queue_.top().time_ <= time) {
-        queue_.top().sprite_->next(time);
-        queue_.top().sprite_->node_->draw(renderer_, &to_draw);
-        queue_.pop();
-    }
-    this->draw(to_draw);
-}
-
-void Painter::draw(std::set<GraphicsObject*, compGOP>& to_draw) {
-	for(auto obj: to_draw) {
-        obj->draw(renderer_);
-    }
-    SDL_RenderPresent(renderer_);
-
+    scene_->drawall();
+    SDL_GL_SwapWindow(this->window_);
 }
