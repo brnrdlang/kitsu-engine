@@ -1,6 +1,7 @@
 #ifndef KITSUNE_PAINTER_SCENE_H
 #define KITSUNE_PAINTER_SCENE_H
 
+#include "GL/glew.h"
 #include "GraphicsObject.h"
 
 class Scene {
@@ -8,7 +9,7 @@ public:
     Scene() {};
     virtual ~Scene() {};
 
-    virtual ObjectID insert(GraphicsObject* obj) = 0;
+    virtual ObjectID add(GraphicsObject* obj) = 0;
     virtual void remove(ObjectID id) = 0;
 
     virtual void drawall() = 0;
@@ -18,13 +19,11 @@ public:
 
 class StandardScene : public Scene {
 public:
-    StandardScene(SDL_GLContext* context) : context_(context) {};
+    StandardScene() {};
     virtual ~StandardScene() {};
 
-    ObjectID insert(GraphicsObject* obj) {
-        obj->scene_ = this;
-
-        return scene_objects.insert(UniqueGObject_P(obj));
+    ObjectID add(GraphicsObject* obj) {
+        return scene_objects.insert(scene_objects.end(), SharedGObject_P(obj));
     };
 
     void remove(ObjectID id) {
@@ -47,9 +46,8 @@ public:
         (*id)->draw();
     };
 
-    SDL_GLContext* context_;
 private:
-    GOSet scene_objects;
+    GOArray scene_objects;
 };
 
 #endif

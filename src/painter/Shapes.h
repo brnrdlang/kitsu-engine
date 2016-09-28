@@ -1,18 +1,28 @@
 #ifndef KITSUNE_SHAPES_H
 #define KITSUNE_SHAPES_H
 
+#include <vector>
+
+#include <GL/glew.h>
+
 #include "GraphicsObject.h"
 
-class Rectangle : public GraphicsObject {
+class Triangle : public GraphicsObject {
 public:
-    Rectangle(SDL_Rect r, SDL_Color c);
-    Rectangle(SDL_Rect r, SDL_Color c, int z);
-    ~Rectangle();
+    Triangle();
+    virtual ~Triangle();
 
     void draw();
 
+    float color_;
 private:
-    SDL_Color clr_;
+    GLuint vbo_;
+    GLuint vao_;
+    GLuint sh_program_;
+    GLuint vert_sh_;
+    GLuint frag_sh_;
+
+    GLint uni_;
 };
 
 #endif

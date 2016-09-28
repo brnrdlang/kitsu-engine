@@ -5,6 +5,8 @@
 #include "SDL_events.h"
 
 struct Controller {
+    std::function<void(SDL_Event)> on_every_event;
+
     std::function<void(SDL_Event)> on_common_event;
 
     std::function<void(SDL_Event)> on_window_event;
@@ -59,6 +61,8 @@ struct Controller {
     std::function<void(SDL_Event)> on_dollar_record;
 
 Controller() {
+    on_every_event = [](SDL_Event ev) {return;};
+
     on_common_event = [](SDL_Event ev) {return;};
 
     on_window_event = [](SDL_Event ev) {return;};
@@ -122,6 +126,8 @@ Controller() {
     };
 
     void eval_event(SDL_Event ev) {
+        on_every_event(ev);
+
         switch(ev.type) {
         case SDL_MOUSEMOTION:
             on_mouse_motion(ev);

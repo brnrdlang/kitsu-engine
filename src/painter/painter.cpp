@@ -32,10 +32,9 @@ Painter::Painter(int width, int height, bool fs, std::string title) {
     glewExperimental = GL_TRUE;
     glewInit();
 
-    SDL_Rect scrn;
-    scrn.x = 0; scrn.y = 0; scrn.w = width; scrn.h = height;
+    this->scene_ = new StandardScene();
 
-    this->scene_ = new StandardScene(&gl_context_);
+    SDL_GL_SwapWindow(this->window_);
 }
 
 /**
@@ -60,13 +59,15 @@ void Painter::update() {
         return;
     }
 
-    unsigned int next = queue_.top().time_;
+    unsigned int next = queue_.top();
 
     if (time+50 < next) {
         SDL_Delay(50);
         return;
     }
-
-    scene_->drawall();
-    SDL_GL_SwapWindow(this->window_);
+    if(time > next) {
+        queue_.pop();
+        scene_->drawall();
+        SDL_GL_SwapWindow(this->window_);
+    }
 }

@@ -21,23 +21,7 @@ private:
 	std::string msg;
 };
 
-class AnimationEvent {
-public:
-    AnimationEvent(unsigned int time, ObjectID objid) : time_(time), id_(objid) {};
-    virtual ~AnimationEvent() {};
-
-    friend bool operator<(const AnimationEvent& ev1, const AnimationEvent& ev2) {
-        return ev1.time_ < ev2.time_;
-    };
-    friend bool operator>(const AnimationEvent ev1, const AnimationEvent& ev2) {
-        return ev1.time_ > ev2.time_;
-    };
-
-    unsigned int time_;
-    ObjectID id_;
-};
-
-typedef std::priority_queue<AnimationEvent, std::vector<AnimationEvent>, std::greater<AnimationEvent>> AnimationQueue;
+typedef std::priority_queue<unsigned int, std::vector<unsigned int>, std::greater<unsigned int>> AnimationQueue;
 
 class Painter {
 public:

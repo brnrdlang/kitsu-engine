@@ -1,7 +1,7 @@
 #ifndef KITSUNE_GRAPHICS_OBJECT_H
 #define KITSUNE_GRAPHICS_OBJECT_H
 
-#include <set>
+#include <vector>
 #include <memory>
 
 #include "SDL.h"
@@ -10,43 +10,45 @@
 class Scene;
 
 struct Position {
-    double x;
-    double y;
-    int z;
+    float x;
+    float y;
+    float z;
 
-    Position(double x, double y) : x(x), y(y), z(0) {};
-    Position(double x, double y, int z) : x(x), y(y), z(z) {};
+    Position(float x, float y) : x(x), y(y), z(0.0f) {};
+    Position(float x, float y, float z) : x(x), y(y), z(z) {};
+};
+
+struct Color {
+    float r;
+    float g;
+    float b;
+    float a;
+
+    Color(float c) : r(c), b(c), g(c), a(1.0f) {};
+    Color(float c, float a) : r(c), b(c), g(c), a(a) {};
+    Color(float r, float g, float b) : r(r), g(g), b(b), a(1.0f) {};
+    Color(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {};
+};
+
+struct Vertex {
+    Position p;
+    Color c;
+
+    Vertex(Position p, Color c) : p(p), c(c) {};
 };
 
 class GraphicsObject {
 public:
-    GraphicsObject(SDL_Rect r) : hitbox_(r), pos_(r.x, r.y, 0), scene_(nullptr) {};
-    GraphicsObject(SDL_Rect r, Position pos) : hitbox_(r), pos_(pos), scene_(nullptr) {};
+    GraphicsObject() {};
     virtual ~GraphicsObject() {};
 
-    friend bool operator<(const GraphicsObject& go1, const GraphicsObject& go2) {
-        return go1.pos_.z > go2.pos_.z;
-    };
-
-    virtual void next(unsigned int time) {return;};
-
     virtual void draw() = 0;
-
-    SDL_Rect hitbox_;
-    Position pos_;
-    Scene* scene_;
 };
 
 typedef std::unique_ptr<GraphicsObject> UniqueGObject_P;
 typedef std::shared_ptr<GraphicsObject> SharedGObject_P;
 
-struct compGOP {
-    bool operator()(const SharedGObject_P& a, const SharedGObject_P & b) const {
-        return *a < *b;
-    }
-};
-
-typedef std::multiset<SharedGObject_P, compGOP> GOSet;
-typedef std::multiset<SharedGObject_P, compGOP>::iterator ObjectID;
+typedef std::vector<SharedGObject_P> GOArray;
+typedef GOArray::iterator ObjectID;
 
 #endif
